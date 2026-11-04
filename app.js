@@ -1255,6 +1255,115 @@
     carregando('');
   }
 
+  // ================= Backup (levar a biblioteca para outro aparelho) =================
+  let backupPronto = null;
+
+  async function prepararBackup() {
+    salvarPos();
+    carregando('Preparando o backup…');
+    try {
+      const textos = {};
+      for (const d of docs) textos[d.id] = (await BD.get('textos', d.id)) || [];
+      const dados = { app: 'leitor-rsvp', versao: 1, exportado: Date.now(), docs, textos, stats };
+      const hoje = new Date();
+      const data = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
+      const nome = `leitor-rsvp-backup-${data}.json`;
+      backupPronto = new File([JSON.stringify(dados)], nome, { type: 'application/json' });
+      carregando('');
+      const mb = backupPronto.size / 1048576;
+      abrirModal('Backup da biblioteca', `
+        <p>O arquivo tem ${docs.length} texto${docs.length === 1 ? '' : 's'}, a posição de leitura de cada um, os marcadores e suas estatísticas (${mb < 0.1 ? 'menos de 0,1' : mb.toFixed(1).replace('.', ',')} MB).</p>
+        <p>Toque em Salvar e escolha <b>Salvar em Arquivos</b>, de preferência numa pasta do iCloud Drive. No outro aparelho, abra o app, toque em + na biblioteca e escolha <b>Restaurar backup</b>.</p>
+        <div class="acoes"><button class="bt cheio" id="salvarBackup">Salvar backup</button><button class="bt" data-fechar>Cancelar</button></div>
+        <p class="nota">As preferências de tema e velocidade não vão no backup: cada aparelho mantém as suas.</p>`);
+    } catch (e) {
+      carregando('');
+      avisar('Não consegui preparar o backup.');
+    }
+  }
+
+  async function salvarBackup() {
+    const arq = backupPronto;
+    if (!arq) return;
+    // O compartilhamento precisa ser chamado direto do toque, sem esperar nada antes.
+    if (navigator.canShare && navigator.canShare({ files: [arq] })) {
+      try {
+        await navigator.share({ files: [arq], title: 'Backup do Leitor RSVP' });
+        fecharModal();
+        avisar('Backup salvo.');
+        return;
+      } catch (e) {
+        if (e && e.name === 'AbortError') return;
+      }
+    }
+    const url = URL.createObjectURL(arq);
+    const a = document.createElement('a');
+    a.href = url; a.download = arq.name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 15000);
+    fecharModal();
+    avisar('Backup baixado: ' + arq.name);
+  }
+
+  async function restaurarBackup(arquivo) {
+    carregando('Restaurando o backup…');
+    try {
+      let dados;
+      try { dados = JSON.parse(await arquivo.text()); } catch (e) { throw new Error('Este arquivo não é um backup do Leitor RSVP.'); }
+      if (!dados || dados.app !== 'leitor-rsvp' || !Array.isArray(dados.docs)) throw new Error('Este arquivo não é um backup do Leitor RSVP.');
+      let novos = 0, atualizados = 0;
+      let atualMudou = false;
+      const trazidos = new Set();
+      const maisRecente = dados.docs.filter((d) => d && d.id).sort((a, b) => (b.ultima || 0) - (a.ultima || 0))[0];
+      for (const d of dados.docs) {
+        if (!d || !d.id) continue;
+        const local = docs.find((x) => x.id === d.id);
+        if (!local) {
+          const caps = dados.textos && dados.textos[d.id];
+          if (!Array.isArray(caps) || !caps.length) continue;
+          await BD.put('textos', d.id, caps);
+          docs.push(Object.assign({}, d, { cor: typeof d.cor === 'number' ? d.cor : docs.length, marcadores: d.marcadores || [] }));
+          novos++;
+          trazidos.add(d.id);
+        } else if ((d.ultima || 0) > (local.ultima || 0)) {
+          local.pos = d.pos || 0;
+          local.marcadores = d.marcadores || [];
+          local.ultima = d.ultima;
+          local.titulo = d.titulo || local.titulo;
+          atualizados++;
+          trazidos.add(d.id);
+          if (E.doc && E.doc.id === local.id) atualMudou = true;
+        }
+      }
+      const juntar = (lista, extra, chave) => {
+        const vistos = new Set(lista.map(chave));
+        for (const x of extra || []) if (x && !vistos.has(chave(x))) { lista.push(x); vistos.add(chave(x)); }
+        lista.sort((a, b) => a.data - b.data);
+      };
+      const st = dados.stats || {};
+      juntar(stats.sessoes, st.sessoes, (s) => s.data + '|' + (s.doc || s.titulo));
+      juntar(stats.quizzes, st.quizzes, (q) => q.data + '|' + q.acertos);
+      juntar(stats.testes, st.testes, (t) => t.data + '|' + Math.round(t.ppm));
+      salvarDocs();
+      salvarStats();
+      renderLista();
+      renderMini();
+      // Continua de onde parou: abre o livro lido por último no outro aparelho.
+      const alvo = maisRecente && trazidos.has(maisRecente.id) ? docs.find((x) => x.id === maisRecente.id) : null;
+      if (alvo) { await abrirDoc(alvo); irSecao('ler'); }
+      else if (atualMudou) await abrirDoc(E.doc);
+      else if (!E.doc && docs.length) await abrirDoc(docs.slice().sort((a, b) => (b.ultima || 0) - (a.ultima || 0))[0]);
+      if (E.secao === 'progresso') renderProgresso();
+      carregando('');
+      avisar(novos || atualizados
+        ? `Backup restaurado: ${novos} texto${novos === 1 ? '' : 's'} novo${novos === 1 ? '' : 's'} e ${atualizados} com a leitura atualizada.`
+        : 'Tudo já estava em dia neste aparelho.');
+    } catch (e) {
+      carregando('');
+      avisar(e && e.message ? e.message : 'Não consegui restaurar esse backup.');
+    }
+  }
+
   // ================= Eventos =================
   function fecharMenus(exceto) {
     $$('.menu').forEach((m) => { if (m !== exceto) m.hidden = true; });
@@ -1303,6 +1412,8 @@
     if (d.modo) { prefs.modo = d.modo; return mudouPref('modo'); }
     if (d.acao === 'arquivo') return $('#arquivo').click();
     if (d.acao === 'colar') return modalColar();
+    if (d.acao === 'exportar') return prepararBackup();
+    if (d.acao === 'restaurar') return $('#arquivoBackup').click();
     if (d.filtro) { E.filtro = d.filtro; renderFiltros(); return renderLista(); }
     if (d.abrir) {
       const doc = docs.find((x) => x.id === d.abrir);
@@ -1395,6 +1506,7 @@
           if (k >= 0) E.doc.marcadores.splice(k, 1); else { E.doc.marcadores.push(E.i); E.doc.marcadores.sort((a, b) => a - b); }
           salvarDocs(); atualizarLeitura(); avisar(k >= 0 ? 'Marcador removido.' : 'Marcador adicionado.'); }
         return;
+      case 'salvarBackup': return salvarBackup();
       case 'btFoco': return abrirFoco();
       case 'focoFechar': return fecharFoco();
       case 'btAjustes': return alternarAjustes();
@@ -1418,6 +1530,7 @@
   $('#faixaPrincipal').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); alternar(); } });
   $('#busca').addEventListener('input', (e) => { E.busca = e.target.value; renderLista(); });
   $('#arquivo').addEventListener('change', (e) => { const l = Array.from(e.target.files || []); e.target.value = ''; if (l.length) importarArquivos(l); });
+  $('#arquivoBackup').addEventListener('change', (e) => { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (f) { fecharGavetas(); restaurarBackup(f); } });
   $('#arquivoSom').addEventListener('change', async (e) => {
     const f = e.target.files && e.target.files[0];
     e.target.value = '';

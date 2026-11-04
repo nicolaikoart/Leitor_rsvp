@@ -42,6 +42,8 @@
   <symbol id="i-arquivo" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></symbol>
   <symbol id="i-colar" viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></symbol>
   <symbol id="i-faisca" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></symbol>
+  <symbol id="i-salvar" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></symbol>
+  <symbol id="i-restaurar" viewBox="0 0 24 24"><path d="M12 21V9M7 14l5-5 5 5M5 3h14"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></symbol>
 </svg>
 
@@ -54,6 +56,9 @@
         <div id="menuImportar" class="menu" role="menu" hidden>
           <button role="menuitem" data-acao="arquivo"><svg class="i"><use href="#i-arquivo"/></svg>Arquivo (EPUB, PDF, TXT, HTML)</button>
           <button role="menuitem" data-acao="colar"><svg class="i"><use href="#i-colar"/></svg>Colar texto</button>
+          <div class="menu-rot">Levar para outro aparelho</div>
+          <button role="menuitem" data-acao="exportar"><svg class="i"><use href="#i-salvar"/></svg>Exportar biblioteca (backup)</button>
+          <button role="menuitem" data-acao="restaurar"><svg class="i"><use href="#i-restaurar"/></svg>Restaurar backup</button>
         </div>
       </div>
     </div>
@@ -177,6 +182,7 @@
 <div id="aviso" class="aviso" role="status" aria-live="polite" hidden></div>
 <input type="file" id="arquivo" hidden multiple accept=".epub,.pdf,.txt,.md,.markdown,.html,.htm,.xhtml,application/epub+zip,application/pdf,text/plain,text/html">
 <input type="file" id="arquivoSom" hidden accept="audio/*">
+<input type="file" id="arquivoBackup" hidden accept=".json,application/json">
 
 <script src="pdf.js"></script>
 <script>if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.js';</script>
