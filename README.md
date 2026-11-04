@@ -3,7 +3,7 @@
 Leitor rápido palavra por palavra para iPad. É um app web que pode ser instalado na tela de início e funciona sem internet.
 
 ## Instalar no iPad
-1. Abra o endereço do app no Safari: https://nicolaikoart.github.io/leitor_rsvp/
+1. Abra o endereço do app no Safari: https://nicolaikoart.github.io/Leitor_rsvp/
 2. Toque em Compartilhar e depois em **Adicionar à Tela de Início**.
 
 ## O que faz
