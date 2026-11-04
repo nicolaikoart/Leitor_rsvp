@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Leitor RSVP</title>
+<meta name="description" content="Leitura rápida palavra por palavra.">
+<meta name="theme-color" content="#F4F5F7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Leitor RSVP">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icone-180.png">
+<link rel="icon" type="image/png" href="icone-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@500&family=Literata:opsz,wght@7..72,400;7..72,500;7..72,700&family=Nunito:wght@500;700&display=swap">
+<link rel="stylesheet" href="estilo.css">
+<style>:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-livros" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM4 19a2 2 0 0 1 2-2h12"/></symbol>
+  <symbol id="i-lateral" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></symbol>
+  <symbol id="i-lista" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></symbol>
+  <symbol id="i-marcador" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="i-expandir" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+  <symbol id="i-ajustes" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></symbol>
+  <symbol id="i-chuva" viewBox="0 0 24 24"><path d="M7 15a4 4 0 1 1 .9-7.9A5 5 0 0 1 17.5 9 3.5 3.5 0 0 1 17 16H7z"/><path d="M8 19l-1 2M12 19l-1 2M16 19l-1 2"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></symbol>
+  <symbol id="i-pausa" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></symbol>
+  <symbol id="i-voltar" viewBox="0 0 24 24"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></symbol>
+  <symbol id="i-avancar" viewBox="0 0 24 24"><path d="M13 17l5-5-5-5M6 17l5-5-5-5"/></symbol>
+  <symbol id="i-mais" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-busca" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-pontos" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></symbol>
+  <symbol id="i-alvo" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></symbol>
+  <symbol id="i-grafico" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-livro" viewBox="0 0 24 24"><path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2zM22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/></symbol>
+  <symbol id="i-arquivo" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></symbol>
+  <symbol id="i-colar" viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></symbol>
+  <symbol id="i-faisca" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></symbol>
+</svg>
+
+<div id="app" class="app largo secao-ler modo-rsvp sem-doc">
+  <aside id="lib" class="lib" aria-label="Biblioteca">
+    <div class="lib-topo">
+      <h2>Biblioteca</h2>
+      <div class="menu-wrap">
+        <button id="btImportar" class="ic bt-acento" aria-label="Importar texto" aria-haspopup="menu" aria-expanded="false" data-menu="menuImportar"><svg class="i"><use href="#i-mais"/></svg></button>
+        <div id="menuImportar" class="menu" role="menu" hidden>
+          <button role="menuitem" data-acao="arquivo"><svg class="i"><use href="#i-arquivo"/></svg>Arquivo (EPUB, PDF, TXT, HTML)</button>
+          <button role="menuitem" data-acao="colar"><svg class="i"><use href="#i-colar"/></svg>Colar texto</button>
+        </div>
+      </div>
+    </div>
+    <label class="busca"><svg class="i"><use href="#i-busca"/></svg><span class="sr">Buscar na biblioteca</span><input id="busca" type="search" placeholder="Buscar" autocomplete="off"></label>
+    <div id="filtros" class="chips" role="group" aria-label="Filtrar por tipo"></div>
+    <div id="lista" class="lista"></div>
+    <div class="mini">
+      <div><span>Sequência</span><b id="miniSeq">0 dias</b></div>
+      <div><span>Média 7 dias</span><b id="miniMedia">—</b></div>
+    </div>
+    <nav class="nav" aria-label="Seções">
+      <button data-secao="ler" aria-current="page"><svg class="i"><use href="#i-livro"/></svg>Ler</button>
+      <button data-secao="treino"><svg class="i"><use href="#i-alvo"/></svg>Treino</button>
+      <button data-secao="progresso"><svg class="i"><use href="#i-grafico"/></svg>Progresso</button>
+    </nav>
+  </aside>
+
+  <div id="veu" class="veu" hidden></div>
+
+  <main class="centro">
+    <section id="secLer" class="sec-ler" aria-label="Leitor">
+      <header class="cab">
+        <button class="ic bt-lib" aria-label="Biblioteca"><svg class="i"><use href="#i-lateral"/></svg></button>
+        <div class="cab-tit"><small id="subtitulo"></small><strong id="titulo">Leitor RSVP</strong></div>
+        <button id="btSom" class="ic" aria-label="Som de chuva" aria-pressed="false"><svg class="i"><use href="#i-chuva"/></svg></button>
+        <div class="menu-wrap so-doc">
+          <button id="btCaps" class="ic" aria-label="Capítulos e marcadores" aria-haspopup="menu" aria-expanded="false" data-menu="menuCaps"><svg class="i"><use href="#i-lista"/></svg></button>
+          <div id="menuCaps" class="menu" role="menu" hidden></div>
+        </div>
+        <button id="btMarca" class="ic so-doc" aria-label="Adicionar marcador" aria-pressed="false"><svg class="i"><use href="#i-marcador"/></svg></button>
+        <button id="btFoco" class="bt-texto so-doc" aria-label="Modo foco"><svg class="i"><use href="#i-expandir"/></svg><span class="rot-foco">Foco</span></button>
+        <button id="btAjustes" class="ic so-doc" aria-label="Ajustes de leitura" aria-pressed="true"><svg class="i"><use href="#i-ajustes"/></svg></button>
+      </header>
+
+      <div id="vazio" class="vazio" hidden>
+        <svg class="i" style="width:52px;height:52px;stroke-width:1.3"><use href="#i-livro"/></svg>
+        <p>Escolha um texto na biblioteca ou importe um novo.</p>
+        <button class="bt cheio bt-lib">Abrir biblioteca</button>
+      </div>
+
+      <div id="faixaPrincipal" class="faixa so-doc" role="button" tabindex="0" aria-label="Ler ou pausar">
+        <div class="faixa-palavra"><div class="guia"></div><div class="palavra" aria-live="off"><span class="esq"></span><span class="foco-letra"></span><span class="dir"></span></div></div>
+        <div class="contexto"></div>
+      </div>
+
+      <div id="texto" class="texto so-doc" aria-label="Texto completo. Toque numa palavra para ler a partir dela."></div>
+
+      <div class="progresso so-doc">
+        <span id="pct">0%</span>
+        <div id="trilha" class="trilha" role="slider" tabindex="0" aria-label="Progresso do texto" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="trilha-fundo"></div><div id="trilhaCheia" class="trilha-cheia"></div><div id="marcas"></div><div id="trilhaBotao" class="trilha-botao"></div>
+        </div>
+        <span id="capRot"></span>
+      </div>
+
+      <div class="controles so-doc">
+        <div class="seg modos" role="group" aria-label="Modo de leitura">
+          <button data-modo="rsvp">RSVP</button><button data-modo="guiada">Guiada</button><button data-modo="bionica">Biônica</button>
+        </div>
+        <div class="transporte">
+          <button class="redondo bt-voltar" aria-label="Voltar uma frase"><svg class="i"><use href="#i-voltar"/></svg></button>
+          <button class="redondo play bt-play" aria-label="Ler"><svg class="i"><use href="#i-play"/></svg></button>
+          <button class="redondo bt-avancar" aria-label="Avançar uma frase"><svg class="i"><use href="#i-avancar"/></svg></button>
+        </div>
+        <div class="vel">
+          <button class="vel-menos" aria-label="Diminuir velocidade">−</button>
+          <div class="vel-valor"><b>300</b><small>ppm</small></div>
+          <button class="vel-mais" aria-label="Aumentar velocidade">+</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="secTreino" class="sec-rolagem" aria-label="Treino" hidden></section>
+    <section id="secProgresso" class="sec-rolagem" aria-label="Progresso" hidden></section>
+  </main>
+
+  <aside id="painel" class="painel" aria-label="Ajustes de leitura"></aside>
+</div>
+
+<div id="foco" class="foco" hidden role="dialog" aria-label="Modo foco">
+  <div class="foco-topo">
+    <button id="focoFechar" class="ic-foco" aria-label="Sair do modo foco"><svg class="i"><use href="#i-x"/></svg></button>
+    <button id="focoSom" class="ic-foco" aria-label="Som de chuva" aria-pressed="false"><svg class="i"><use href="#i-chuva"/></svg></button>
+    <div class="foco-tit"><strong id="focoTitulo"></strong><small id="focoCap"></small></div>
+    <span id="focoPct" class="foco-pct">0%</span>
+  </div>
+  <div id="focoArea" class="foco-area">
+    <div id="faixaFoco">
+      <div class="faixa-palavra"><div class="guia"></div><div class="palavra"><span class="esq"></span><span class="foco-letra"></span><span class="dir"></span></div></div>
+      <div class="contexto"></div>
+    </div>
+  </div>
+  <div class="foco-rodape">
+    <div class="foco-trilha"><i id="focoCheia"></i></div>
+    <div class="foco-ctrl">
+      <div class="foco-transp">
+        <button class="redondo bt-voltar" aria-label="Voltar uma frase"><svg class="i"><use href="#i-voltar"/></svg></button>
+        <button class="redondo play bt-play" aria-label="Ler"><svg class="i"><use href="#i-play"/></svg></button>
+        <button class="redondo bt-avancar" aria-label="Avançar uma frase"><svg class="i"><use href="#i-avancar"/></svg></button>
+      </div>
+      <div class="vel">
+        <button class="vel-menos" aria-label="Diminuir velocidade">−</button>
+        <div class="vel-valor"><b>300</b><small>ppm</small></div>
+        <button class="vel-mais" aria-label="Aumentar velocidade">+</button>
+      </div>
+    </div>
+    <p class="foco-dica">Toque para pausar · deslize ↕ para mudar a velocidade · segure para ver o parágrafo</p>
+  </div>
+  <div id="focoBolha" class="foco-bolha" hidden></div>
+  <div id="focoPar" class="foco-par" hidden></div>
+</div>
+
+<div id="modal" class="modal" hidden>
+  <div class="modal-caixa" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+    <header><h2 id="modalTitulo"></h2><button id="modalFechar" class="ic" aria-label="Fechar"><svg class="i"><use href="#i-x"/></svg></button></header>
+    <div id="modalCorpo" class="modal-corpo"></div>
+  </div>
+</div>
+
+<div id="carregando" class="carregando" hidden><div><div class="giro"></div><p id="carregandoMsg"></p></div></div>
+<div id="aviso" class="aviso" role="status" aria-live="polite" hidden></div>
+<input type="file" id="arquivo" hidden multiple accept=".epub,.pdf,.txt,.md,.markdown,.html,.htm,.xhtml,application/epub+zip,application/pdf,text/plain,text/html">
+<input type="file" id="arquivoSom" hidden accept="audio/*">
+
+<script src="pdf.js"></script>
+<script>if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.js';</script>
+<script src="motor.js"></script>
+<script src="app.js"></script>
+<script>if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));</script>
+</body>
+</html>
