@@ -1,7 +1,7 @@
 // Guarda o app para funcionar sem internet.
-const VERSAO = 'leitor-rsvp-1.1.0';
+const VERSAO = 'leitor-rsvp-1.2.0';
 const ARQUIVOS = ['./', 'index.html', 'estilo.css', 'motor.js', 'app.js', 'pdf.js', 'pdf.worker.js',
-  'manifest.webmanifest', 'icone-180.png', 'icone-192.png', 'icone-512.png'];
+  'manifest.webmanifest', 'icone-180.png', 'icone-192.png', 'icone-512.png', 'icone-maskable.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSAO).then((c) => c.addAll(ARQUIVOS)).then(() => self.skipWaiting()));
