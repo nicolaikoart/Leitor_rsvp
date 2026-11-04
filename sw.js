@@ -1,5 +1,5 @@
 // Guarda o app para funcionar sem internet.
-const VERSAO = 'leitor-rsvp-1.0.0';
+const VERSAO = 'leitor-rsvp-1.1.0';
 const ARQUIVOS = ['./', 'index.html', 'estilo.css', 'motor.js', 'app.js', 'pdf.js', 'pdf.worker.js',
   'manifest.webmanifest', 'icone-180.png', 'icone-192.png', 'icone-512.png'];
 
